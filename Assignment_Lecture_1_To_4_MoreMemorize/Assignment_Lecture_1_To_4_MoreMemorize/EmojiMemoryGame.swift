@@ -7,13 +7,14 @@
 
 import SwiftUI
 
+// MARK: - Theme
 enum Theme {
-    case vehicle, people, food, animal, nature, activity
+    case vehicle, people, food, animal, nature, activity, flags, objects, smiley, symbol
     
     var emojis: [String] {
         switch self {
         case .vehicle:
-           return ["🚂", "🚁", "🚀","🚜", "🚗","🚕","🚙","🚌","🚎","🏎","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🛴","🛵","✈️","🚞","🚢","⛴","⛵️"]
+            return ["🚂", "🚁", "🚀","🚜", "🚗","🚕","🚙","🚌","🚎","🏎","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🛴","🛵","✈️","🚞","🚢","⛴","⛵️"]
         case .people:
             return  ["🧑‍🦱", "👩🏼‍🦳","🧑🏾‍🦳", "👮🏽‍♀️","🧔🏻‍♂️", "👲","👳‍♀️", "🧕🏼","👷‍♀️", "💂🏻‍♀️","🕵🏼‍♀️", "🕵️‍♂️","👩🏻‍⚕️", "👩🏼‍🌾","👩🏼‍🍳", "👩🏻‍🎓","👩🏽‍🎤", "🧑🏾‍🎤","👩‍🏫", "👨🏻‍🏫","👩‍🏭", "👩🏻‍💻","👨‍💻", "👩‍💼","🧑🏽‍🔧", "🧑‍🔬","👩🏻‍🎨", "👩🏽‍🚒","🧑🏼‍🚀", "👨🏻‍✈️","👰🏻‍♂️", "👸","🤴🏻", "🧝🏼‍♀️"]
         case .food:
@@ -21,9 +22,17 @@ enum Theme {
         case .animal:
             return  ["🐶", "🐱","🐭", "🐹","🐰", "🦊","🐻", "🐼","🐻‍❄️", "🐨","🐯", "🦁","🐮", "🐷","🐽", "🐸","🐵", "🙈","🐒", "🐔","🐧", "🐦","🐤", "🐣","🐥", "🦆","🦅", "🦉","🦇", "🐺","🐗", "🐴","🦄", "🐝"]
         case .nature:
-            return  ["🐉", "🐲","🌵", "🎄","🌲", "🌳","🌴", "🪵","🌱", "🌿","☘️", "🍀","🎍", "🪴","🎋", "🍃","🍂", "🍁","🍄", "🐚","🪨", "🌾","💐", "🌷","🌺", "🌼","🌜", "🌞","🌎", "⛅️","⛈", "","", ""]
+            return  ["🐉", "🐲","🌵", "🎄","🌲", "🌳","🌴", "🪵","🌱", "🌿","☘️", "🍀","🎍", "🪴","🎋", "🍃","🍂", "🍁","🍄", "🐚","🪨", "🌾","💐", "🌷","🌺", "🌼","🌜", "🌞","🌎", "⛅️","⛈", "❄️","🌟", "⛄️"]
         case .activity:
             return  ["⚽️", "🏀","🏈", "⚾️","🥎", "🏐","🏉", "🥏","🎱", "🏓","🪀", "🏸","🏒", "🏑","🥍", "🏏","🪃", "⛳️","🪁", "🏹","🎣", "🤿","🥊", "🥋","🎽", "🛼","🛹", "🛷","🥌", "🎿","🏂", "🚵🏻‍♂️","🏄🏼", "🪂"]
+        case .flags:
+            return ["🏴","🚩","🏳️‍🌈","🏳️‍⚧️","🇺🇳","🇦🇫","🇦🇶","🇦🇽","🇦🇩","🇧🇸","🇧🇭","🇧🇩","🇧🇧","🇧🇾","🇧🇪","🇧🇬","🇰🇭","🇮🇨","🇨🇦","🇰🇷","🇺🇸","🇬🇧","🇹🇭","🇺🇾"]
+        case .objects:
+            return ["⌚️","📱","💻","🖥","🖨","🖱","🖲","📸","📹","💽","☎️","📟","📺","🧭","⏰","⌛️","📡","💸","🔋","💎","💵","🪜","⚖️","🩸"]
+        case .smiley:
+            return ["😀","😅","🤣","🥲","☺️","😇","🙃","😉","😌","😍","🥰","😘","🤓","🤩","🥳","😏","😫","😡","🤬","🥵","🥶","😶‍🌫️","😱","🤮"]
+        case .symbol:
+            return ["❤️","❤️‍🩹","💕","☯️","☢️","❌","🅰️","⭕️","⚠️","🚸","🚫","💯","⛔️","❇️","🌀","🚼","➖","🎵","➗","✖️","🔈","🕐","♣️","🔔"]
         }
     }
     
@@ -32,6 +41,14 @@ enum Theme {
         case .vehicle:
             return 10
         case .people:
+            return 10
+        case .flags:
+            return 10
+        case .objects:
+            return 10
+        case .smiley:
+            return 10
+        case .symbol:
             return 10
         case .food:
             return 10
@@ -58,30 +75,115 @@ enum Theme {
             return Color.green
         case .activity:
             return Color.purple
+        case .flags:
+            return Color.mint
+        case .objects:
+            return Color.gray
+        case .smiley:
+            return Color.yellow
+        case .symbol:
+            return Color.cyan
+        }
+    }
+    
+    var name: String {
+        switch self {
+        case .vehicle:
+            return "Vehicel"
+        case .people:
+            return "People"
+        case .food:
+            return "Food"
+        case .animal:
+            return "Animal"
+        case .nature:
+            return "Nature"
+        case .activity:
+            return "Activity"
+        case .flags:
+            return "Flags"
+        case .objects:
+            return "Objects"
+        case .smiley:
+            return "Smiley"
+        case .symbol:
+            return "Symbol"
+        }
+    }
+    
+    var emojisTitle: String {
+        switch self {
+        case .vehicle:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .people:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .food:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .animal:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .nature:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .activity:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .flags:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .objects:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .smiley:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
+        case .symbol:
+            return "\(self.emojis[0])\(self.emojis[1])\(self.emojis[2])"
         }
     }
 }
 
+
+
+// MARK: - Emoji Memory Game
 class EmojiMemoryGame: ObservableObject {
     static func createMemoryGame(from theme: Theme) -> MemoryGame<String> {
         MemoryGame<String>(numberOfPairsOfCards: theme.numberPairsOfCards) { pairIndex in
-            theme.emojis[pairIndex] }
+            let shuffledEmojis = theme.emojis.shuffled()
+            return shuffledEmojis[pairIndex]
+        }
     }
     
     @Published private var model: MemoryGame<String>
     @Published var theme: Theme
+    @Published var score: Int
+    @Published var isShowingGameOver: Bool
+    @Published var gameOverText: String
     
     init(theme: Theme) {
         self.theme = theme
         model = EmojiMemoryGame.createMemoryGame(from: theme)
+        score = 0
+        isShowingGameOver = false
+        gameOverText = ""
     }
-        
+    
     var cards: Array<MemoryGame<String>.Card> {
         model.cards
     }
     
-    // MARK: - Intent(s)
     func choose(_ card: MemoryGame<String>.Card) {
-        model.choose(card)
+        score += model.choose(card)
+        let matchedCards = cards.filter {$0.isMatched}
+        if model.cards.count == matchedCards.count {
+            isShowingGameOver = true
+            if score > cards.count / 2 {
+                gameOverText = "You are the champion of memorizing \(theme.name)."
+            } else if score > 0 {
+                gameOverText = "You have a genius brain to memorize \(theme.name)."
+            } else  {
+                gameOverText = "Play again! \nMemorizing \(theme.name)."
+            }
+        }
+    }
+    
+    func restartGame() {
+        model = EmojiMemoryGame.createMemoryGame(from: theme)
+        score = 0
+        isShowingGameOver = false
     }
 }

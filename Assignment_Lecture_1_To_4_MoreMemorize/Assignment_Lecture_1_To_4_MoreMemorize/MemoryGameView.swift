@@ -11,18 +11,54 @@ struct MemoryGameView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-                ForEach(viewModel.cards) { card in
-                    CardView(card: card).aspectRatio(2/3, contentMode: .fit)
-                        .onTapGesture {
-                            viewModel.choose(card)
+        if viewModel.isShowingGameOver {
+            VStack {
+                Text(viewModel.gameOverText)
+                    .font(.title.bold())
+                    .foregroundColor(viewModel.theme.color)
+                    .multilineTextAlignment(.center)
+                    .padding(20)
+                Button {
+                    viewModel.restartGame()
+                } label: {
+                    VStack {
+                        Text("Restart \(viewModel.theme.name) Memorizing Game")
+                            .foregroundColor(viewModel.theme.color)
+                        HStack {
+                            Text(viewModel.theme.emojis[0])
+                            Text(viewModel.theme.emojis[1])
+                            Text(viewModel.theme.emojis[2])
+                            Text(viewModel.theme.emojis[3])
+                            Text(viewModel.theme.emojis[4])
+                            Text(viewModel.theme.emojis[5])
+                            Text(viewModel.theme.emojis[6])
+                            Text(viewModel.theme.emojis[7])
                         }
+                    }
+                    .padding(10)
+                    .background(viewModel.theme.color.opacity(0.3))
+                    .cornerRadius(6)
+                }
+            }.padding(20)
+        } else {
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
+                    ForEach(viewModel.cards) { card in
+                        CardView(card: card).aspectRatio(2/3, contentMode: .fit)
+                            .onTapGesture {
+                                viewModel.choose(card)
+                            }
+                    }
                 }
             }
+            .foregroundColor(viewModel.theme.color)
+            .padding(.horizontal)
+            .navigationTitle("\(viewModel.theme.emojisTitle)  Score : \(viewModel.score)")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                viewModel.restartGame()
+            }
         }
-        .foregroundColor(viewModel.theme.color)
-        .padding(.horizontal)
     }
 }
 

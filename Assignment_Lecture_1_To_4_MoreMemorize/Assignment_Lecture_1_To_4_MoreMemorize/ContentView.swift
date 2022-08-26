@@ -100,6 +100,66 @@ struct ContentView: View {
                         Text(Theme.vehicle.emojis[7])
                     }
                 }
+                
+                NavigationLink {
+                    MemoryGameView(viewModel: EmojiMemoryGame(theme: Theme.flags))
+                } label: {
+                    HStack {
+                        Text(Theme.flags.emojis[0])
+                        Text(Theme.flags.emojis[1])
+                        Text(Theme.flags.emojis[2])
+                        Text(Theme.flags.emojis[3])
+                        Text(Theme.flags.emojis[4])
+                        Text(Theme.flags.emojis[5])
+                        Text(Theme.flags.emojis[6])
+                        Text(Theme.flags.emojis[7])
+                    }
+                }
+                
+                NavigationLink {
+                    MemoryGameView(viewModel: EmojiMemoryGame(theme: Theme.objects))
+                } label: {
+                    HStack {
+                        Text(Theme.objects.emojis[0])
+                        Text(Theme.objects.emojis[1])
+                        Text(Theme.objects.emojis[2])
+                        Text(Theme.objects.emojis[3])
+                        Text(Theme.objects.emojis[4])
+                        Text(Theme.objects.emojis[5])
+                        Text(Theme.objects.emojis[6])
+                        Text(Theme.objects.emojis[7])
+                    }
+                }
+                
+                NavigationLink {
+                    MemoryGameView(viewModel: EmojiMemoryGame(theme: Theme.smiley))
+                } label: {
+                    HStack {
+                        Text(Theme.smiley.emojis[0])
+                        Text(Theme.smiley.emojis[1])
+                        Text(Theme.people.emojis[2])
+                        Text(Theme.smiley.emojis[3])
+                        Text(Theme.smiley.emojis[4])
+                        Text(Theme.smiley.emojis[5])
+                        Text(Theme.smiley.emojis[6])
+                        Text(Theme.smiley.emojis[7])
+                    }
+                }
+                
+                NavigationLink {
+                    MemoryGameView(viewModel: EmojiMemoryGame(theme: Theme.symbol))
+                } label: {
+                    HStack {
+                        Text(Theme.symbol.emojis[0])
+                        Text(Theme.symbol.emojis[1])
+                        Text(Theme.symbol.emojis[2])
+                        Text(Theme.symbol.emojis[3])
+                        Text(Theme.symbol.emojis[4])
+                        Text(Theme.symbol.emojis[5])
+                        Text(Theme.symbol.emojis[6])
+                        Text(Theme.symbol.emojis[7])
+                    }
+                }
             }
             .navigationTitle("Memory Game")
         }
