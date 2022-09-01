@@ -39,7 +39,7 @@ enum Theme {
     var numberPairsOfCards: Int {
         switch self {
         case .vehicle:
-            return 10
+            return 4
         case .people:
             return 10
         case .flags:
