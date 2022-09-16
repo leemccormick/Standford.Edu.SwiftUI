@@ -57,7 +57,7 @@ struct SunSetGameView: View {
             }
             .padding()
             .foregroundColor(.blue)
-            .navigationTitle("Sun Set Game")
+            .navigationTitle("Set Game")
         }
     }
     
