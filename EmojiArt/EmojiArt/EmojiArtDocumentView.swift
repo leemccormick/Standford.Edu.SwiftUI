@@ -9,12 +9,13 @@ import SwiftUI
 
 struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
+    
     let defaultEmojiFontSize: CGFloat = 40
     
     var body: some View {
         VStack(spacing: 0) {
             documentBody
-            palette
+            PaletteChooser(emojiFontSize: defaultEmojiFontSize)
         }
     }
     
@@ -27,7 +28,6 @@ struct EmojiArtDocumentView: View {
                         .position(convertFromEmojiCoordinates((0,0), in: geometry))
                 )
                 .gesture(doubleTapToZoom(in: geometry.size))
-                
                 if document.backgroundImageFetchStatus == .fetching {
                     ProgressView().scaleEffect(2)
                 } else {
@@ -40,16 +40,45 @@ struct EmojiArtDocumentView: View {
                 }
             }
             .clipped()
-            .onDrop(of: [.plainText, .url, .image], isTargeted: nil) { providers, location in
-                return drop(providers: providers, at: location, in: geometry)
+            .onDrop(of: [.plainText,.url,.image], isTargeted: nil) { providers, location in
+                drop(providers: providers, at: location, in: geometry)
             }
             .gesture(panGesture().simultaneously(with: zoomGesture()))
+            .alert(item: $alertToShow) { alertToShow in
+                // return Alert
+                alertToShow.alert()
+            }
+            // L12 monitor fetch status and alert user if fetch failed
+            .onChange(of: document.backgroundImageFetchStatus) { status in
+                switch status {
+                case .failed(let url):
+                    showBackgroundImageFetchFailedAlert(url)
+                default:
+                    break
+                }
+            }
         }
     }
     
+    // L12 state which says whether a certain identifiable alert should be showing
+    @State private var alertToShow: IdentifiableAlert?
+    
+    // L12 sets alertToShow to an IdentifiableAlert explaining a url fetch failure
+    private func showBackgroundImageFetchFailedAlert(_ url: URL) {
+        alertToShow = IdentifiableAlert(id: "fetch failed: " + url.absoluteString, alert: {
+            Alert(
+                title: Text("Background Image Fetch"),
+                message: Text("Couldn't load image from \(url)."),
+                dismissButton: .default(Text("OK"))
+            )
+        })
+    }
+    
+    // MARK: - Drag and Drop
+    
     private func drop(providers: [NSItemProvider], at location: CGPoint, in geometry: GeometryProxy) -> Bool {
         var found = providers.loadObjects(ofType: URL.self) { url in
-            document.setBackground(EmojiArtModel.Background.url(url.imageURL))
+            document.setBackground(.url(url.imageURL))
         }
         if !found {
             found = providers.loadObjects(ofType: UIImage.self) { image in
@@ -64,19 +93,22 @@ struct EmojiArtDocumentView: View {
                     document.addEmoji(
                         String(emoji),
                         at: convertToEmojiCoordinates(location, in: geometry),
-                        size: defaultEmojiFontSize / zoomScale)
+                        size: defaultEmojiFontSize / zoomScale
+                    )
                 }
             }
         }
         return found
     }
     
-    private func fontSize(for emoji: EmojiArtModel.Emoji) -> CGFloat {
-        CGFloat(emoji.size)
-    }
+    // MARK: - Positioning/Sizing Emoji
     
     private func position(for emoji: EmojiArtModel.Emoji, in geometry: GeometryProxy) -> CGPoint {
         convertFromEmojiCoordinates((emoji.x, emoji.y), in: geometry)
+    }
+    
+    private func fontSize(for emoji: EmojiArtModel.Emoji) -> CGFloat {
+        CGFloat(emoji.size)
     }
     
     private func convertToEmojiCoordinates(_ location: CGPoint, in geometry: GeometryProxy) -> (x: Int, y: Int) {
@@ -88,30 +120,15 @@ struct EmojiArtDocumentView: View {
         return (Int(location.x), Int(location.y))
     }
     
-    private func convertFromEmojiCoordinates(_ location: (x: Int, y: Int),in geometry: GeometryProxy) -> CGPoint {
+    private func convertFromEmojiCoordinates(_ location: (x: Int, y: Int), in geometry: GeometryProxy) -> CGPoint {
         let center = geometry.frame(in: .local).center
         return CGPoint(
-            x: center.x + CGFloat(location.x) * zoomScale + panOffset.width ,
-            y: center.y + CGFloat(location.y) * zoomScale - panOffset.height
+            x: center.x + CGFloat(location.x) * zoomScale + panOffset.width,
+            y: center.y + CGFloat(location.y) * zoomScale + panOffset.height
         )
     }
     
-    @State private var steadyStatePanOffset: CGSize = CGSize.zero
-    @GestureState private var gesturePanOffset: CGSize = CGSize.zero
-    
-    private var panOffset: CGSize {
-        (steadyStatePanOffset + gesturePanOffset) * zoomScale
-    }
-    
-    private func panGesture() -> some Gesture {
-        DragGesture()
-            .updating($gesturePanOffset) { lastestGestureValue, gesturePanOffset, _ in
-                gesturePanOffset = lastestGestureValue.translation / zoomScale
-            }
-            .onEnded { finalDragGestureVale in
-                steadyStatePanOffset = steadyStatePanOffset + (finalDragGestureVale.translation / zoomScale)
-            }
-    }
+    // MARK: - Zooming
     
     @State private var steadyStateZoomScale: CGFloat = 1
     @GestureState private var gestureZoomScale: CGFloat = 1
@@ -122,9 +139,8 @@ struct EmojiArtDocumentView: View {
     
     private func zoomGesture() -> some Gesture {
         MagnificationGesture()
-            .updating($gestureZoomScale) { lastestGestureScale, gestureZoomScale, transaction in
-                gestureZoomScale = lastestGestureScale
-                
+            .updating($gestureZoomScale) { latestGestureScale, gestureZoomScale, _ in
+                gestureZoomScale = latestGestureScale
             }
             .onEnded { gestureScaleAtEnd in
                 steadyStateZoomScale *= gestureScaleAtEnd
@@ -141,7 +157,7 @@ struct EmojiArtDocumentView: View {
     }
     
     private func zoomToFit(_ image: UIImage?, in size: CGSize) {
-        if let image = image, image.size.width > 0, image.size.height > 0, size.width > 0, size.height > 0 {
+        if let image = image, image.size.width > 0, image.size.height > 0, size.width > 0, size.height > 0  {
             let hZoom = size.width / image.size.width
             let vZoom = size.height / image.size.height
             steadyStatePanOffset = .zero
@@ -149,26 +165,23 @@ struct EmojiArtDocumentView: View {
         }
     }
     
-    var palette: some View {
-        ScrollingEmojisView(emojis: testEmojis)
-            .font(.system(size: defaultEmojiFontSize))
+    // MARK: - Panning
+    
+    @State private var steadyStatePanOffset: CGSize = CGSize.zero
+    @GestureState private var gesturePanOffset: CGSize = CGSize.zero
+    
+    private var panOffset: CGSize {
+        (steadyStatePanOffset + gesturePanOffset) * zoomScale
     }
     
-    let testEmojis = "😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸😁🏳️‍🌈🩸"
-}
-
-struct ScrollingEmojisView: View {
-    let emojis: String
-    
-    var body: some View {
-        ScrollView(.horizontal) {
-            HStack {
-                ForEach(emojis.map { String($0) }, id: \.self) { emoji in
-                    Text(emoji)
-                        .onDrag { NSItemProvider(object: emoji as NSString) }
-                }
+    private func panGesture() -> some Gesture {
+        DragGesture()
+            .updating($gesturePanOffset) { latestDragGestureValue, gesturePanOffset, _ in
+                gesturePanOffset = latestDragGestureValue.translation / zoomScale
             }
-        }
+            .onEnded { finalDragGestureValue in
+                steadyStatePanOffset = steadyStatePanOffset + (finalDragGestureValue.translation / zoomScale)
+            }
     }
 }
 
